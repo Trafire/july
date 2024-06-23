@@ -10,7 +10,7 @@ from .models import Activities
 
 
 def home(request):
-    activities_list = Activities.objects.all().order_by("description", "name")
+    activities_list = Activities.objects.all().order_by("-planned", "description", "name")
     paginator = Paginator(activities_list, 10000)
 
     page_number = request.GET.get("page")
