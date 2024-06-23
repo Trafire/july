@@ -10,7 +10,8 @@
             Audacity Index: {{ dares_rating }}
         </div>
         <!-- Button trigger modal -->
-        <button style="margin-top: 20px" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addActivityModal">
+        <button style="margin-top: 20px" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#addActivityModal">
             Add Activity
         </button>
         {% include 'activity_table.html' %}
@@ -19,25 +20,73 @@
     </div>
 
     <script>
+
         $(document).ready(function () {
-            $('#activity').DataTable();
-
-            // Handle completed checkbox click event
-            $('.completed-checkbox').on('click', function () {
-                var activityId = $(this).data('id');
-                var completed = $(this).is(':checked') ? 1 : 0;
-
-                // Send a POST request to the server to update the activity's completed status
-                $.post('/update_activity_completed_status', {id: activityId, completed: completed}, function (data) {
-                    if (data.success) {
-                        console.log('Activity completed status updated successfully.');
-                        // Update the dare rating display
-                        $('#dare-rating').text('Audacity Index: ' + data.total_rating);
-                    } else {
-                        console.log('Failed to update activity completed status.');
-                    }
-                });
+            let table = $('#activity').DataTable({
+                drawCallback: function () {
+                    applyEventHandlers();
+                }
             });
-        });
+
+            function applyEventHandlers() {
+                $('.completed-checkbox').on('click', function () {
+                    var activityId = $(this).data('id');
+                    var completed = $(this).is(':checked') ? 1 : 0;
+
+                    // Send a POST request to the server to update the activity's completed status
+                    $.post('/update_activity_completed_status', {
+                        id: activityId,
+                        completed: completed
+                    }, function (data) {
+                        if (data.success) {
+                            console.log('Activity completed status updated successfully.');
+                            // Update the dare rating display
+                            $('#dare-rating').text('Audacity Index: ' + data.total_rating);
+                        } else {
+                            console.log('Failed to update activity completed status.');
+                        }
+                    });
+                });
+
+                $('#activity').on('click', '.planned-checkbox', function () {
+                    var activityId = $(this).data('id');
+                    var planned = $(this).is(':checked') ? 1 : 0;
+
+                    // Send a POST request to the server to update the activity's planned status
+                    $.post('/update_activity_planned_status', {id: activityId, planned: planned}, function (data) {
+                        if (data.success) {
+                            console.log('Activity planned status updated successfully.');
+                        } else {
+                            console.log('Failed to update activity planned status.');
+                        }
+                    });
+                });
+
+                // Handle delete button click event
+                $('#activity').on('click', '.delete-button', function () {
+                    var activityId = $(this).data('id');
+                    var row = $(this).parents('tr');  // Get the row
+
+                    // Send a DELETE request to the server to delete the activity
+                    $.ajax({
+                        url: '/delete_activity?id=' + activityId,
+                        type: 'DELETE',
+                        success: function (data) {
+                            if (data.success) {
+                                console.log('Activity deleted successfully.');
+                                table.row(row).remove().draw();
+                                     } else {
+                                console.log('Failed to delete activity.');
+                            }
+                        }
+                    });
+                });
+       
+        }
+
+        // Handle completed checkbox click event
+        applyEventHandlers();
+        })
+        ;
     </script>
 {% endblock %}
