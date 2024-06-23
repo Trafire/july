@@ -53,7 +53,7 @@ def add_activity(request):
         )
         activity.save()
 
-    activities_list = Activities.objects.all().order_by("description", "name")
+    activities_list = Activities.objects.all().order_by("-planned", "description", "name")
     paginator = Paginator(activities_list, 10000)  # Show 10 activities per page.
 
     page_number = request.GET.get("page")
