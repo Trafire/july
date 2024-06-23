@@ -4,11 +4,11 @@
         <tr>
             <th scope="col">Completed</th>
             <th scope="col">Name</th>
-            <th scope="col">Location</th>
-            <th scope="col">Time</th>
-            <th scope="col">Description</th>
+            <th scope="col" class="d-none d-sm-table-cell">Location</th>
+            <th scope="col" class="d-none d-sm-table-cell">Time</th>
+            <th scope="col" class="d-none d-sm-table-cell">Description</th>
             <th scope="col">Let's Do it!</th>
-            <th scope="col">Cost</th>
+            <th scope="col" class="d-none d-sm-table-cell">Cost</th>
             <th scope="col">Audacity Index</th>
             <th scope="col"></th>
         </tr>
@@ -19,15 +19,15 @@
                 <td><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
                            {% if activity.completed %}checked{% endif %}></td>
                 <td>{{ activity.name }}</td>
-                <td>{{ activity.location }}</td>
-                <td>{{ activity.date_time|default_if_none:"" }}</td>
-                <td>{{ activity.description }}</td>
+                <td class="d-none d-sm-table-cell">{{ activity.location }}</td>
+                <td class="d-none d-sm-table-cell">{{ activity.date_time|default_if_none:"" }}</td>
+                <td class="d-none d-sm-table-cell">{{ activity.description }}</td>
                 <td ><input type="checkbox" class="planned-checkbox" data-id="{{ activity.id }}"
                            {% if activity.planned %}checked{% endif %}></td>
-                <td>{{ activity.cost }}</td>
+                <td class="d-none d-sm-table-cell">{{ activity.cost }}</td>
                 <td>{{ activity.daring_rating }}</td>
                 <td>
-                    <button class="btn btn-danger delete-button" data-id="{{ activity.id }}">Delete</button>
+                    <button class="btn btn-danger" data-id="{{ activity.id }}"><i class="fa fa-trash" style="color:white;"></i></button>
                 </td>
             </tr>
         {% endfor %}
