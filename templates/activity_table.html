@@ -2,7 +2,7 @@
     <table id="activity" class="table">
         <thead>
         <tr>
-            <th scope="col" style="text-align: center">Done</th>
+            <th scope="col" >Done</th>
             <th scope="col">Name</th>
             <th scope="col" class="d-none d-sm-table-cell">Location</th>
             <th scope="col" class="d-none d-sm-table-cell">Time</th>
@@ -16,16 +16,16 @@
         <tbody>
         {% for activity in page_obj %}
             <tr>
-                <td style="text-align: center"><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
+                <td class="center"><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
                            {% if activity.completed %}checked{% endif %}></td>
                 <td>{{ activity.name }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.location }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.date_time|default_if_none:"" }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.description }}</td>
-                <td ><input type="checkbox" class="planned-checkbox" data-id="{{ activity.id }}"
+                <td class="center"><input type="checkbox" class="planned-checkbox" data-id="{{ activity.id }}"
                            {% if activity.planned %}checked{% endif %}></td>
-                <td class="d-none d-sm-table-cell">{{ activity.cost }}</td>
-                <td>{{ activity.daring_rating }}</td>
+                <td class="d-none d-sm-table-cell center">{{ activity.cost }}</td>
+                <td class="center">{{ activity.daring_rating }}</td>
                 <td>
                     <button class="btn btn-danger" data-id="{{ activity.id }}"><i class="fa fa-trash" style="color:white;"></i></button>
                 </td>
