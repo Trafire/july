@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Activities{% endblock %}
+{% block page-title %}Activities {% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- Dare rating display -->
+        <div id="dare-rating" class="dare-rating-box">
+            Audacity Index: {{ dares_rating }}
+        </div>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addActivityModal">
+            Add Activity
+        </button>
+        {% include 'activity_table.html' %}
+        {% include 'activity_form.html' %}
+        {% include 'edit_form.html' %}
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#activity').DataTable();
+
+            // Handle completed checkbox click event
+            $('.completed-checkbox').on('click', function () {
+                var activityId = $(this).data('id');
+                var completed = $(this).is(':checked') ? 1 : 0;
+
+                // Send a POST request to the server to update the activity's completed status
+                $.post('/update_activity_completed_status', {id: activityId, completed: completed}, function (data) {
+                    if (data.success) {
+                        console.log('Activity completed status updated successfully.');
+                        // Update the dare rating display
+                        $('#dare-rating').text('Audacity Index: ' + data.total_rating);
+                    } else {
+                        console.log('Failed to update activity completed status.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

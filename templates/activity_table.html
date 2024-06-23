@@ -1,0 +1,153 @@
+<div id="activityTable">
+    <table id="activity" class="table">
+        <thead>
+        <tr>
+            <th scope="col">Completed</th>
+            <th scope="col">Name</th>
+            <th scope="col">Location</th>
+            <th scope="col">Time</th>
+            <th scope="col">Description</th>
+            <th scope="col">Let's Do it!</th>
+            <th scope="col">Cost</th>
+            <th scope="col">Audacity Index</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for activity in page_obj %}
+            <tr>
+                <td><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
+                           {% if activity.completed %}checked{% endif %}></td>
+                <td>{{ activity.name }}</td>
+                <td>{{ activity.location }}</td>
+                <td>{{ activity.date_time|default_if_none:"" }}</td>
+                <td>{{ activity.description }}</td>
+                <td ><input type="checkbox" class="planned-checkbox" data-id="{{ activity.id }}"
+                           {% if activity.planned %}checked{% endif %}></td>
+                <td>{{ activity.cost }}</td>
+                <td>{{ activity.daring_rating }}</td>
+                <td>
+                    <button class="btn btn-danger delete-button" data-id="{{ activity.id }}">Delete</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        `
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        var table = $('#activity').DataTable();
+        $('#activity').DataTable();
+
+        $('#activity').on('click', '.planned-checkbox', function () {
+            var activityId = $(this).data('id');
+            var planned = $(this).is(':checked') ? 1 : 0;
+
+            // Send a POST request to the server to update the activity's planned status
+            $.post('/update_activity_planned_status', {id: activityId, planned: planned}, function (data) {
+                if (data.success) {
+                    console.log('Activity planned status updated successfully.');
+                } else {
+                    console.log('Failed to update activity planned status.');
+                }
+            });
+        });
+
+        // Handle completed checkbox click event
+        $('#activity').on('click', '.completed-checkbox', function () {
+            var activityId = $(this).data('id');
+            var completed = $(this).is(':checked') ? 1 : 0;
+
+            // Send a POST request to the server to update the activity's completed status
+            $.post('/update_activity_completed_status', {id: activityId, completed: completed}, function (data) {
+                if (data.success) {
+                    console.log('Activity completed status updated successfully.');
+                } else {
+                    console.log('Failed to update activity completed status.');
+                }
+            });
+        });
+
+        // Handle edit button click event
+        $('#activity').on('click', '.edit-button', function () {
+            var activityId = $(this).data('id');
+            console.log('Edit button clicked for activity ID: ' + activityId);
+            var data = table.row($(this).parents('tr')).data();
+            var dateComponents = data[3].split(/[- :]/);
+            var date = new Date(dateComponents[0], dateComponents[1] - 1, dateComponents[2], dateComponents[3], dateComponents[4]);
+
+            // Format the date
+            var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + 'T' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+
+            // Populate the form fields with the data
+            // Open the modal
+            $('#editActivityForm').append('<input type="hidden" id="activityId" name="activityId" value="' + activityId + '">');
+            $('#editActivityForm #name').val(data[1]);
+            $('#editActivityForm #location').val(data[2]);
+            $('#editActivityForm #date_time').val(formattedDate);
+            $('#editActivityForm #description').val(data[4]);
+            $('#editActivityForm #cost').val(data[5]);
+            $('#editActivityForm #daring_rating').val(data[6]);
+            $('#editActivityModal').modal('show');
+
+            $('#editActivityForm').on('submit', function (event) {
+                event.preventDefault();
+
+                var activityId = $('#editActivityForm .edit-button').data('id');
+                var name = $('#editActivityForm #name').val();
+                var location = $('#editActivityForm #location').val();
+                var dateTime = $('#editActivityForm #date_time').val();
+                var description = $('#editActivityForm #description').val();
+                var cost = $('#editActivityForm #cost').val();
+                var daringRating = $('#editActivityForm #daring_rating').val();
+                var completed = $('#editActivityForm #completed').is(':checked') ? 1 : 0;
+
+                // Send a POST request to the server to update the activity
+                $.post('/update_activity', {
+                    id: activityId,
+                    name: name,
+                    location: location,
+                    date_time: dateTime,
+                    description: description,
+                    cost: cost,
+                    daring_rating: daringRating,
+                    completed: completed
+                }, function (data) {
+                    if (data.success) {
+                        console.log('Activity updated successfully.');
+                        // Close the modal and reload the page to update the table
+                        $('#editActivityModal').modal('hide');
+                        location.reload();
+                    } else {
+                        console.log('Failed to update activity.');
+                    }
+                });
+            });
+
+        });
+
+        // Handle delete button click event
+        $('#activity').on('click', '.delete-button', function () {
+            var activityId = $(this).data('id');
+            var row = $(this).parents('tr');  // Get the row
+
+            // Send a DELETE request to the server to delete the activity
+            $.ajax({
+                url: '/delete_activity?id=' + activityId,
+                type: 'DELETE',
+                success: function (data) {
+                    if (data.success) {
+                        console.log('Activity deleted successfully.');
+                        table.row(row).remove().draw();
+                        // Reload the page to update the table
+                        location.reload();
+                    } else {
+                        console.log('Failed to delete activity.');
+                    }
+                }
+            });
+        });
+    });
+
+</script>

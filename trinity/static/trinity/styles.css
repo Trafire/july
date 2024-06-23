@@ -1,0 +1,25 @@
+.dare-rating-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 20px; /* Increase padding */
+    border-radius: 5px;
+    color: #191970; /* Change text color */
+    font-size: 24px; /* Increase font size */
+    font-weight: bold;
+
+}
+.banner {
+    background-size: cover;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Add a subtle gradient background */
+    background-image: linear-gradient(to right, #b0eae3, #FFFFFF);
+}
+
+.banner-title {
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
