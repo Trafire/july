@@ -2,7 +2,7 @@
     <table id="activity" class="table">
         <thead>
         <tr>
-            <th scope="col">Completed</th>
+            <th scope="col" style="text-align: center">Done</th>
             <th scope="col">Name</th>
             <th scope="col" class="d-none d-sm-table-cell">Location</th>
             <th scope="col" class="d-none d-sm-table-cell">Time</th>
@@ -16,7 +16,7 @@
         <tbody>
         {% for activity in page_obj %}
             <tr>
-                <td><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
+                <td style="text-align: center"><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
                            {% if activity.completed %}checked{% endif %}></td>
                 <td>{{ activity.name }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.location }}</td>
