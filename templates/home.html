@@ -74,18 +74,18 @@
                         success: function (data) {
                             if (data.success) {
                                 console.log('Activity deleted successfully.');
-                                table.row(row).remove().draw();
+                                table.row(row).remove().draw(false);
                                      } else {
                                 console.log('Failed to delete activity.');
                             }
                         }
                     });
                 });
-       
-        }
 
-        // Handle completed checkbox click event
-        applyEventHandlers();
+            }
+
+            // Handle completed checkbox click event
+            applyEventHandlers();
         })
         ;
     </script>
