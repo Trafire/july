@@ -143,3 +143,19 @@ def update_activity_planned_status(request):
         activity.save()
         return JsonResponse({"success": True})
     return JsonResponse({"success": False})
+
+
+@csrf_exempt
+def save_comment(request):
+    if request.method == "POST":
+        activity_id = request.POST.get("id")
+        comment_text = request.POST.get("comment")
+        try:
+            activity = Activities.objects.get(id=activity_id)
+            # Assuming your model has a field named 'comment'
+            activity.comment = comment_text
+            activity.save()
+            return JsonResponse({"success": True, "message": "Comment saved successfully"})
+        except Activities.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Activity not found"})
+    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)

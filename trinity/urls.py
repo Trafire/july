@@ -8,6 +8,7 @@ from .views import (
     update_activity,
     update_activity_completed_status,
     update_activity_planned_status,
+    save_comment
 )
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
         update_activity_planned_status,
         name="update_activity_planned_status",
     ),
+    path('save_comment/', save_comment, name='save_comment'),
 ]

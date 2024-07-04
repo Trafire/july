@@ -9,7 +9,8 @@ class Activities(models.Model):
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     daring_rating = models.IntegerField()
     completed = models.BooleanField()
-    planned = models.BooleanField(default=False)  #
+    planned = models.BooleanField(default=False)
+    comment = models.TextField(blank=True, null=False)
 
     def __str__(self):
         return self.name

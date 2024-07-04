@@ -2,7 +2,7 @@
     <table id="activity" class="table">
         <thead>
         <tr>
-            <th scope="col" >Done</th>
+            <th scope="col">Done</th>
             <th scope="col">Name</th>
             <th scope="col" class="d-none d-sm-table-cell">Location</th>
             <th scope="col" class="d-none d-sm-table-cell">Time</th>
@@ -11,26 +11,121 @@
             <th scope="col" class="d-none d-sm-table-cell">Cost</th>
             <th scope="col">Audacity Index</th>
             <th scope="col"></th>
+            <th scope="col">Comments</th> <!-- Existing column for comments -->
+            <th scope="col">Add Comment</th> <!-- New column for add comment button -->
         </tr>
         </thead>
         <tbody>
         {% for activity in page_obj %}
             <tr>
                 <td class="center"><input type="checkbox" class="completed-checkbox" data-id="{{ activity.id }}"
-                           {% if activity.completed %}checked{% endif %}></td>
+                                          {% if activity.completed %}checked{% endif %}></td>
                 <td>{{ activity.name }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.location }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.date_time|default_if_none:"" }}</td>
                 <td class="d-none d-sm-table-cell">{{ activity.description }}</td>
                 <td class="center"><input type="checkbox" class="planned-checkbox" data-id="{{ activity.id }}"
-                           {% if activity.planned %}checked{% endif %}></td>
+                                          {% if activity.planned %}checked{% endif %}></td>
                 <td class="d-none d-sm-table-cell center">{{ activity.cost }}</td>
                 <td class="center">{{ activity.daring_rating }}</td>
                 <td>
-                    <button class="btn btn-danger delete-button" data-id="{{ activity.id }}"><i class="fa fa-trash" style="color:white;"></i></button>
+                    <button class="btn btn-danger delete-button" data-id="{{ activity.id }}"><i class="fa fa-trash"
+                                                                                                style="color:white;"></i>
+                    </button>
+                </td>
+                <td>
+                    <!-- Display the comment text if it exists, otherwise show nothing -->
+                    {% if activity.comment %}
+                        <!-- Inside your loop for each activity -->
+                        <span class="comment-container"
+                              data-activity-id="{{ activity.id }}">{{ activity.comment }}</span>
+                    {% else %}
+                        <!-- Inside your loop for each activity -->
+                        <span class="comment-container" data-activity-id="{{ activity.id }}"> No Comment </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- Always show the "Add Comment" button -->
+                    <button id="comment-button" class="btn btn-info comment-button" data-id="{{ activity.id }}">Add
+                        Comment
+                    </button>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+
+
+<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="commentForm">
+                    <div class="form-group">
+                        <label for="commentText" class="col-form-label">Comment:</label>
+                        <textarea class="form-control" id="commentText"></textarea>
+                    </div>
+                    <input type="hidden" id="activityId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveComment">Save Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.comment-button').click(function () {
+            var activityId = $(this).data('id');
+            $('#activityId').val(activityId);
+            $('#commentModal').modal('show');
+        });
+
+        $('#saveComment').click(function () {
+            var commentText = $('#commentText').val();
+            var activityId = $('#activityId').val();
+            $.ajax({
+                url: '/save_comment/',
+                method: 'POST',
+                data: {
+                    'id': activityId,
+                    'comment': commentText,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    // Update the comment display
+                    if (response.success) {
+                        // Assuming you change to use class or data attribute for comment containers
+                        // For example, using a class 'comment-container' and data attribute 'data-activity-id'
+                        $('.comment-container[data-activity-id="' + activityId + '"]').text(commentText || 'No comment');
+                    }
+                    $('#commentModal').modal('hide');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $('#commentModal .btn-secondary').click(function () {
+            $('#commentModal').modal('hide');
+        });
+
+        // Close modal using the "X" button
+        $('#commentModal .close').click(function () {
+            $('#commentModal').modal('hide');
+        });
+
+    });
+
+</script>   
